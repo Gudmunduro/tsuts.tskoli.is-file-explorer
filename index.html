@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+      <title>File explorer</title>
+      <link rel="stylesheet" href="include/style.css" />
+      <script src="include/script.js"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+       <select class="driveLetter" id="drive" onchange="onDriveChange()">
+           <option value="C:">C:</option>
+           <option value="E:" selected>E:</option>
+      </select>
+      <p id="currentDir" class="CurrentDir">Loading</p>
+      <div class="files">
+          <input type="text" placeholder="Leita" class="searchBox" id="searchBox" oninput="onSearchChange()" />
+          <ul id="fileList">
+          </ul>
+      </div>
+      <div class="filemenu" id="phpFileMenu" hidden>
+          <p id="menuFileName"></p>
+          <a onclick="openPhpInBrowser()">Opna í browser</a>
+          <a onclick="showCurrentPhpCode()">Skoða kóða</a>
+          <a onclick="downloadCurrentPhpFile()">Download</a>
+          <a onclick="closePhpFileMenu()">Loka</a>
+      </div>
+  </body>
+</html>

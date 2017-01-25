@@ -1,0 +1,96 @@
+body{
+    background-color: #EEEEEE;
+}
+
+.CurrentDir{
+    text-align: center;
+}
+
+.files{
+    display: block;
+    width: 200px;
+    margin: 0 auto;
+}
+.files ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.files li{
+    margin: 20px 0;
+}
+.files ul a{
+    font-family: Verdana;
+    display: block;
+    text-decoration: none;
+    background-color: #FF5722;
+    padding: 10px;
+    margin: 20px 0;
+    color: white;
+    transition: all 0.3s;
+    width: 200px;
+    border-radius: 5px;
+    word-wrap: break-word;
+}
+.files ul a:hover{
+    cursor: default;
+    background-color: #D84315;
+}
+.files ul a:active{
+    background-color: #BF360C;
+}
+
+.filemenu{
+    padding: 10px 0;
+    width: 300px;
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: #616161;
+    border-radius: 10px;
+}
+.filemenu a{
+    color: white;
+    display: block;
+    width: 90%;
+    margin: 3px auto;
+    font-family: Verdana;
+    font-size: 1em;
+    background-color: #FF5722;
+    text-align: center;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s;
+    padding: 10px;
+}
+.filemenu a:hover{
+    cursor: default;
+    background-color: #BF360C;
+}
+.filemenu a:active{
+    background-color: black;
+}
+.filemenu p{
+    color: white;
+    display: block;
+    width: 85%;
+    word-wrap: break-word;
+    margin: 3px auto;
+    font-family: Verdana;
+    font-size: 1em;
+    text-align: center;
+    padding: 10px;
+}
+
+.searchBox{
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+}
+
+.driveLetter{
+    display: block;
+    margin: 0 auto;
+    width: 50px;
+}
