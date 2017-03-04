@@ -94,3 +94,97 @@ body{
     margin: 0 auto;
     width: 50px;
 }
+
+.unlockButton{
+    color: white;
+    display: block;
+    margin: 3px auto;
+    font-family: Verdana;
+    font-size: 1em;
+    background-color: #FF5722;
+    text-align: center;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    padding: 10px;
+    width: 20px;
+}
+.unlockButton:hover{
+    cursor: default;
+    background-color: #BF360C;
+}
+.unlockButton:active{
+    background-color: black;
+}
+
+.tools{
+    width: 347px;
+    display: block;
+    margin: 3px auto;
+}
+.tools a{
+    color: white;
+    display: inline-block;
+    margin: 3px auto;
+    font-family: Verdana;
+    font-size: 1em;
+    background-color: #FF5722;
+    text-align: center;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    padding: 10px;
+}
+.tools a:hover{
+    cursor: default;
+    background-color: #BF360C;
+}
+.tools a:active{
+    background-color: black;
+}
+
+.textEditor{
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 80%;
+    height: 80%;
+    background-color: #616161;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px gray;
+}
+.textEditor textarea{
+    display: block;
+    margin: 0 auto;
+    width: 99%;
+    height: calc(100% - 70px);
+    background-color: #3c3c3c;
+    border: none;
+    color: white;
+    font-family: Verdana;
+    outline: none;
+    resize: none;
+}
+
+.textEditor div{
+    width: 150px;
+    margin: 20px auto;
+}
+
+.textEditor a{
+    background-color: #FF5722;
+    color: white;
+    padding: 10px;
+    font-family: Verdana;
+    font-size: 1.1em;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.textEditor a:hover{
+    cursor: default;
+    background-color: #BF360C;
+}
+.textEditor a:active{
+    background-color: black;
+}

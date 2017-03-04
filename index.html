@@ -1,8 +1,9 @@
 <!doctype html>
 <html>
   <head>
-      <title>File explorer</title>
+      <title>File Explorer</title>
       <link rel="stylesheet" href="include/style.css" />
+      <link rel="icon" href="explorer.ico" />
       <script src="include/script.js"></script>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
@@ -11,8 +12,16 @@
            <option value="C:">C:</option>
            <option value="E:" selected>E:</option>
       </select>
+
+      <a class="unlockButton" id="unlockButton" onclick="login()">&#128274</a>
+      <div class="tools" id="tools" style="display: none">
+          <a onclick="createDirectory()">Create directory</a>
+          <a onclick="createFile()">Create file</a>
+          <a onclick="logOut()">Skrá út</a>
+      </div>
+
       <p id="currentDir" class="CurrentDir">Loading</p>
-      <div class="files">
+      <div class="files" ondrop="onDrop(event)" ondragover="event.preventDefault()">
           <input type="text" placeholder="Leita" class="searchBox" id="searchBox" oninput="onSearchChange()" />
           <ul id="fileList">
           </ul>
@@ -21,8 +30,22 @@
           <p id="menuFileName"></p>
           <a onclick="openPhpInBrowser()">Opna í browser</a>
           <a onclick="showCurrentPhpCode()">Skoða kóða</a>
-          <a onclick="downloadCurrentPhpFile()">Download</a>
+          <a onclick="downloadCurrentFile()">Download</a>
           <a onclick="closePhpFileMenu()">Loka</a>
+      </div>
+      <div class="filemenu" id="loggedInFileMenu" hidden>
+          <p id="loggedInFileMenuTitle"></p>
+          <a onclick="downloadCurrentFile()">Download</a>
+          <a onclick="openFileInEditor(currentFileName)">Opna í text editor</a>
+          <a onclick="deleteCurrentFile()">Delete</a>
+          <a onclick="closeLoggedInFileMenu()">Loka</a>
+      </div>
+      <div class="textEditor" id="textEditorDiv" style="display: none">
+          <textarea id="textEditor"></textarea>
+          <div>
+              <a onclick="closeTextEditor()">Cancel</a>
+              <a onclick="saveFile()">Save</a>
+          </div>
       </div>
   </body>
 </html>

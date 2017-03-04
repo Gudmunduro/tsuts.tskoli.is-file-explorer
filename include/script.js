@@ -1,10 +1,11 @@
 window.onload = onLoad;
 window.onhashchange = onHashChange;
-var currentPhpFileLink = "";
-var currentPhpFileDir = "";
-var currentPhpFileName = "";
+var currentFileLink = "";
+var currentFileDir = "";
+var currentFileName = "";
 var fileCount = 0;
 var driveLetter = "E:";
+var loggedIn = false;
 
 function getCurrentDir()
 {
@@ -52,7 +53,17 @@ function updateDir()
     rq.send("dir="+getCurrentDir() + "&drive=" + driveLetter);
     rq.onload = function () {
         console.log(rq.responseText);
-        var fileList = JSON.parse(rq.responseText);
+        var fileList;
+        try
+        {
+            fileList = JSON.parse(rq.responseText);
+        }
+        catch(e)
+        {
+            addFile(".", 0);
+            document.getElementById("currentDir").innerHTML = getCurrentDir();
+            alert(rq.responseText);
+        }
         for (var i = 0; i < fileList.length; i++)
         {
             addFile(fileList[i], i);
@@ -77,7 +88,7 @@ function addFile(filename, id)
     a.id = "file" + id;
     if (getCurrentDir().includes("/utsdata"))
     {
-        if (fileType("html") || fileType("css") || fileType("js"))
+        if (fileType("html") || fileType("css") || fileType("js") || fileType("scss") || fileType("htm"))
         {
             console.log("html, css or js file: " + filename);
             a.innerHTML = filename;
@@ -86,6 +97,11 @@ function addFile(filename, id)
             }
             else {
                 a.href = "http://tsuts.tskoli.is/" + getCurrentDir().replace("/utsdata", "") + filename;
+            }
+            if (loggedIn) {
+                a.dataset.name = filename;
+                a.dataset.dir = getCurrentDir();
+                a.oncontextmenu = openLoggedInFileMenu;
             }
             a.target = "_blank";
             li.appendChild(a);
@@ -98,32 +114,53 @@ function addFile(filename, id)
             a.innerHTML = filename;
             a.onclick = openPhpFileMenu;
             a.dataset.name = filename;
-            a.dataset.dir = getCurrentDir() + "/" + filename;
-            if (getCurrentDir().includes("/utsdata/")) {
+            a.dataset.dir = getCurrentDir();
+            if (getCurrentDir().includes("/utsdata/"))
+            {
                 a.dataset.link = "http://tsuts.tskoli.is/" + getCurrentDir().replace("/utsdata/", "") + "/" + filename;
             }
-            else {
+            else
+            {
                 a.dataset.link = "http://tsuts.tskoli.is/" + getCurrentDir().replace("/utsdata", "") + filename;
+            }
+            if (loggedIn){
+                a.dataset.name = filename;
+                a.dataset.dir = getCurrentDir();
+                a.oncontextmenu = openLoggedInFileMenu;
             }
             li.appendChild(a);
             document.getElementById("fileList").appendChild(li);
             return;
         }
     }
-    if (fileType("txt") || fileType("exe") || fileType("msi") || fileType("config") || fileType("sys") || fileType("inf") || fileType("efi") || fileType("dll") || fileType("xml") || fileType("c") || fileType("py"))
+    if (fileType("txt") || fileType("exe") || fileType("msi") || fileType("config") || fileType("sys")|| fileType("inf") || fileType("efi") || fileType("dll") || fileType("xml") || fileType("c") || fileType("py") || fileType("pdf") || fileType("cmd") || fileType("zip"))
     {
         a.innerHTML = filename;
-        a.href = "http://tsuts.tskoli.is/2t/1404002030/filemgr/download.php?dir=" + getCurrentDir() + "/" + filename + "&filename=" + filename;
+        if (loggedIn)
+        {
+            a.dataset.name = filename;
+            a.dataset.dir = getCurrentDir();
+            a.onclick = openLoggedInFileMenu;
+        }
+        else
+        {
+            a.href = "http://tsuts.tskoli.is/2t/1404002030/filemgr/download.php?dir=" + getCurrentDir() + "&filename=" + filename;
+        }
         li.appendChild(a);
         document.getElementById("fileList").appendChild(li);
         return;
     }
-    if (fileType("png") || fileType("jpg") || fileType("gif"))
+    if (fileType("png") || fileType("jpg") || fileType("gif") || fileType("ico"))
     {
         console.log("image file: " + filename)
         a.innerHTML = filename;
         a.href = "http://tsuts.tskoli.is/2t/1404002030/filemgr/img.php?dir=" + getCurrentDir() + "/" + filename + "&filename=" + filename;
         a.target = "_blank";
+        if (loggedIn) {
+            a.dataset.name = filename;
+            a.dataset.dir = getCurrentDir();
+            a.oncontextmenu = openLoggedInFileMenu;
+        }
         li.appendChild(a);
         document.getElementById("fileList").appendChild(li);
         return;
@@ -144,6 +181,10 @@ function addFile(filename, id)
         var newDir = dir.join("/");
         a.innerHTML = filename;
         a.href = "#/" + newDir;
+        if (a.href.startsWith("#//"))
+        {
+            a.href = "#" + a.href.substring(2);
+        }
         li.appendChild(a);
         document.getElementById("fileList").appendChild(li);
         return;
@@ -156,6 +197,10 @@ function addFile(filename, id)
         var newDir = dir.join("/");
         a.innerHTML = filename;
         a.href = "#/" + newDir;
+        if (a.href.startsWith("#//"))
+        {
+            a.href = "#" + a.href.substring(2);
+        }
         li.appendChild(a);
         document.getElementById("fileList").appendChild(li);
         return;
@@ -168,11 +213,25 @@ function addFile(filename, id)
 
 function openPhpFileMenu(e)
 {
+    closeLoggedInFileMenu();
     document.getElementById("phpFileMenu").hidden = false;
     document.getElementById("menuFileName").innerHTML = e.srcElement.dataset.name;
-    currentPhpFileLink = e.srcElement.dataset.link;
-    currentPhpFileDir = e.srcElement.dataset.dir;
-    currentPhpFileName = e.srcElement.dataset.name;
+    currentFileLink = e.srcElement.dataset.link;
+    currentFileDir = e.srcElement.dataset.dir;
+    currentFileName = e.srcElement.dataset.name;
+}
+function openLoggedInFileMenu(e)
+{
+    e.preventDefault();
+    closePhpFileMenu();
+    currentFileDir = e.srcElement.dataset.dir;
+    currentFileName = e.srcElement.dataset.name;
+    document.getElementById("loggedInFileMenuTitle").innerHTML = currentFileName;
+    document.getElementById("loggedInFileMenu").hidden = false;
+}
+function closeLoggedInFileMenu()
+{
+    document.getElementById("loggedInFileMenu").hidden = true;
 }
 function closePhpFileMenu()
 {
@@ -180,15 +239,15 @@ function closePhpFileMenu()
 }
 function openPhpInBrowser()
 {
-    window.open(currentPhpFileLink, "_blank");
+    window.open(currentFileLink, "_blank");
 }
 function showCurrentPhpCode()
 {
-    window.open("http://tsuts.tskoli.is/2t/1404002030/filemgr/showContent.php?dir=" + currentPhpFileDir, "_blank");
+    window.open("http://tsuts.tskoli.is/2t/1404002030/filemgr/showContent.php?dir=" + currentFileDir + "/" + currentFileName, "_blank");
 }
-function downloadCurrentPhpFile()
+function downloadCurrentFile()
 {
-    window.open("http://tsuts.tskoli.is/2t/1404002030/filemgr/download.php?dir=" + currentPhpFileDir + "&filename=" + currentPhpFileName, "_blank");
+    window.open("http://tsuts.tskoli.is/2t/1404002030/filemgr/download.php?dir=" + currentFileDir + "&filename=" + currentFileName, "_blank");
 }
 
 function downlaodFile(fileName, dir)
@@ -198,6 +257,9 @@ function downlaodFile(fileName, dir)
 
 function onHashChange()
 {
+    closeTextEditor();
+    closePhpFileMenu();
+    closeLoggedInFileMenu();
     updateDir();
 }
 
@@ -251,5 +313,150 @@ function onSearchChange()
                 document.getElementById("file" + i).style.display = "none";
             }
         }
+    }
+}
+
+function login()
+{
+    var password = prompt("Password", "");
+    var rq = new XMLHttpRequest();
+    rq.open("POST", "logIn.php", true);
+    rq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    rq.send("passwd=" + password);
+    rq.onload = function () {
+        if (rq.responseText == "success")
+        {
+            loggedIn = true;
+            document.getElementById("tools").style.display = "";
+            document.getElementById("unlockButton").style.display = "none";
+            updateDir();
+        }
+        else
+        {
+            alert(rq.responseText);
+        }
+    }
+}
+
+function createDirectory()
+{
+    var dirName = prompt("Directory name", "");
+    var rq = new XMLHttpRequest();
+    rq.open("POST", "mkdir.php", true);
+    rq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    rq.send("dir=" + getCurrentDir() + "/" + dirName);
+    rq.onload = function () {
+        if (rq.responseText == "success") {
+            updateDir();
+        }
+        else {
+            alert(rq.responseText);
+        }
+    }
+}
+function createFile() {
+    var fileName = prompt("File name", "");
+    var rq = new XMLHttpRequest();
+    rq.open("POST", "mkfile.php", true);
+    rq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    rq.send("dir=" + getCurrentDir() + "/" + fileName);
+    rq.onload = function () {
+        if (rq.responseText == "success") {
+            if (confirm("Opna í text editor")) {
+                openFileInEditor(fileName);
+            }
+            updateDir();
+        }
+        else {
+            alert(rq.responseText);
+        }
+    }
+}
+
+function openFileInEditor(filename)
+{
+    var rq = new XMLHttpRequest();
+    rq.open("POST", "getContent.php", true);
+    rq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    rq.send("dir=" + getCurrentDir() + "/" + filename);
+    rq.onload = function () {
+        document.getElementById("textEditor").value = rq.responseText;
+        document.getElementById("textEditorDiv").style.display = "";
+    }
+}
+function saveFile()
+{
+    var rq = new XMLHttpRequest();
+    var text = document.getElementById("textEditor").value;
+    rq.open("POST", "save.php", true);
+    rq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    rq.send("text=" + text + "&dir=" + getCurrentDir());
+    rq.onload = function () {
+        if (rq.responseText == "success")
+        {
+            document.getElementById("textEditorDiv").style.display = "none";
+            alert("File saved!");
+        }
+        else
+        {
+            alert(rq.responseText);
+        }
+    }
+}
+function closeTextEditor()
+{
+    document.getElementById("textEditorDiv").style.display = "none";
+}
+
+function deleteCurrentFile()
+{
+    if (!confirm("Are you sure you want to delete " + currentFileName)) { return; }
+    var rq = new XMLHttpRequest();
+    rq.open("POST", "delete.php", true);
+    rq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    rq.send("dir=" + currentFileDir + "/" + currentFileName);
+    rq.onload = function () {
+        if (rq.responseText == "success")
+        {
+            alert("Deleted");
+            updateDir();
+        }
+        else
+        {
+            alert(rq.responseText);
+        }
+    }
+}
+
+function onDrop(e)
+{
+    if (!loggedIn)
+    {
+        return;
+    }
+    e.preventDefault();
+    var rq = new XMLHttpRequest();
+    rq.open("POST", "upload.php", true);
+    var files = new FormData();
+    files.append("file", e.dataTransfer.items[0].getAsFile());
+    files.append("dir", getCurrentDir());
+    rq.send(files);
+    rq.onload = function () {
+        console.log(rq.responseText)
+        updateDir();
+    }
+}
+function logOut()
+{
+    var rq = new XMLHttpRequest();
+    rq.open("POST", "logout.php", true);
+    rq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    rq.send();
+    rq.onload = function () {
+        loggedIn = false;
+        document.getElementById("tools").style.display = "none";
+        document.getElementById("unlockButton").style.display = "";
+        alert(rq.responseText);
+        updateDir();
     }
 }
